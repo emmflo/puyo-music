@@ -25,9 +25,9 @@ Right = Droite
 
 Idem pour le p2 sur le numpad avec les touches 8 5 4 6
 
-Le code est bardé de bugs
-Le code est aussi bien rangé commenté et conçu que mon cerveau :>
-Ne lisez pas le code pour votre santé.
+Le code est bardé de bugs  
+Le code est aussi bien rangé commenté et conçu que mon cerveau :>  
+Ne lisez pas le code pour votre santé.  
 
 Pas de menus.
 
