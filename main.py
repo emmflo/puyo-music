@@ -3,10 +3,6 @@
 import pyglet
 from pyglet.image.codecs.pil import PILImageDecoder
 
-import rtmidi
-from rtmidi.midiutil import open_midiport
-from rtmidi.midiconstants import *
-
 import time
 
 import subprocess
@@ -22,9 +18,15 @@ import os
 if _platform == "win32":
     import winsound
 
-#backend = "Output"
+backend = "Output"
 #backend = "MIDI"
-backend = "Beep"
+#backend = "Beep"
+
+if backend == "MIDI":
+    import rtmidi
+    from rtmidi.midiutil import open_midiport
+    from rtmidi.midiconstants import *
+
 
 class PlayGround:
 
@@ -54,7 +56,7 @@ class PlayGround:
         pyglet.clock.schedule_interval(self.display, 1/60)
     
     def gravity(self):
-        print("INTO GRAVITY")
+        #print("INTO GRAVITY")
         #self.last_state = self.state
         gravity_blocs = []
         for index,note in enumerate(self.state):
@@ -80,7 +82,7 @@ class PlayGround:
         return gravity_blocs_elem
 
     def check_chord(self, player):
-        print("INTO CHECK_CHORD")
+        #print("INTO CHECK_CHORD")
         count = 0
         for index,note in enumerate(self.state):
             notes = []
@@ -140,7 +142,7 @@ class PlayGround:
         wait = False
         while True:
             if self.check_chord(player) > 0:
-                print("COMBO BREAKER !")
+                #print("COMBO BREAKER !")
                 player.combo += 1
                 #time.sleep(2)
                 #if player != -1:
@@ -165,9 +167,9 @@ class PlayGround:
                         player.combo = 1
                 if player.score > 0:
                     player.attackEnnemies()
-                print("Player Damage = []".format(player.damage))
+                #print("Player Damage = []".format(player.damage))
                 if(player.damage > 0):
-                    print("LOL")
+                    #print("LOL")
                     player.takeDamage()
                 elif wait == False:
                     player.dispense()
@@ -292,7 +294,7 @@ class FloatElem:
         if self.pauseBool:
             return
         if self.human_pos[0] + 1 < self.playground.columns and self.playground.state[self.grid_pos+1] == -1 and self.sprite != None:
-            print(self.sprite)
+            #print(self.sprite)
             self.sprite.x += self.playground.elem_width
             self.grid_pos = int((self.sprite.x - self.playground.origin[0]) // self.playground.elem_height + ((self.sprite.y - self.playground.elem_width) // self.playground.elem_width) * self.playground.columns)
             self.human_pos = self.index2human(self.grid_pos)
@@ -305,7 +307,7 @@ class FloatElem:
         if self.pauseBool:
             return
         if self.human_pos[0] > 0 and self.playground.state[self.grid_pos-1] == -1 and self.sprite != None:
-            print(self.sprite)
+            #print(self.sprite)
             self.sprite.x -= self.playground.elem_width
             self.grid_pos = int((self.sprite.x - self.playground.origin[0]) // self.playground.elem_height + ((self.sprite.y - self.playground.elem_width) // self.playground.elem_width) * self.playground.columns) 
             self.human_pos = self.index2human(self.grid_pos)
@@ -475,7 +477,7 @@ class OutputBeep(OutputSound):
         super().__init__()
     
     def playBeep(self, freq, time):
-        print(freq)
+        #print(freq)
         if _platform == "win32":
             winsound.Beep(freq, time)
         elif _platform == "linux" or _platform == "linux2":
@@ -485,7 +487,7 @@ class OutputBeep(OutputSound):
     def playChord(self, notes, time):
         number = len(notes)
         for index,note in enumerate(notes):
-            print(note)
+            #print(note)
             pyglet.clock.schedule_once(lambda x, y: self.playBeep(self.noteToFreq[y], time/number-250), (index+1)*(time/1000)/number, note)
 
 class OutputPlay(OutputSound):
@@ -493,6 +495,7 @@ class OutputPlay(OutputSound):
         super().__init__()
 
     def playBeep(self, freq, time):
+        print(freq)
         if _platform == "linux" or _platform == "linux2":
             subprocess.Popen(['/usr/bin/play', '--no-show-progress', '--null', '--channels', '1', 'synth', str(time/1000), 'sine', str(freq)])
             #os.system('play --no-show-progress --null --channels 1 synth {} sine {}'.format(time/1000, freq))
