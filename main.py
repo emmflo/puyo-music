@@ -22,6 +22,9 @@ backend = "Output"
 #backend = "MIDI"
 #backend = "Beep"
 
+#arpeggiato = False
+arpeggiato = True
+
 if backend == "MIDI":
     import rtmidi
     from rtmidi.midiutil import open_midiport
@@ -499,6 +502,18 @@ class OutputPlay(OutputSound):
         if _platform == "linux" or _platform == "linux2":
             subprocess.Popen(['/usr/bin/play', '--no-show-progress', '--null', '--channels', '1', 'synth', str(time/1000), 'sine', str(freq)])
             #os.system('play --no-show-progress --null --channels 1 synth {} sine {}'.format(time/1000, freq))
+            
+    def playArpeggiato(self, notes, time):
+        number = len(notes)
+        for index,note in enumerate(notes):
+            #print(note)
+            pyglet.clock.schedule_once(lambda x, y: self.playBeep(self.noteToFreq[y], time/number-250), (index+1)*(time/1000)/number, note)
+
+    def playChord(self, notes, time):
+        if arpeggiato:
+            self.playArpeggiato(notes, time)
+        else:
+            super().playChord(notes, time)
 
 class OutputMidi(OutputSound):
     def __init__(self):
